@@ -28,11 +28,14 @@ int main(){
 }
 
 double psi_at_inf(double E, int flag){
-	double V(double r);
+	double V(double r, double extV);
 	double dr = 0.050;
 	double psi0, psi1, psi2;
 	double r;
 	double m_eff = 0.067;
+	double extE = 5e-3;
+	double rangex = 453.6;
+	double voltage = extE / rangex;
 
 	psi0 = psi1 = 1.0;
 	if(flag){
@@ -42,22 +45,17 @@ double psi_at_inf(double E, int flag){
 		if(flag){
 			std::cout << std::scientific << r << std::resetiosflags(std::ios_base::floatfield) << " " << psi1 << std::endl;
 		}
-		psi2 = (r * (2.0 * m_eff * dr * dr * (V(r) - E) + 2.0) * psi1 + (-r + dr) * psi0) / (r + dr);
+		psi2 = (r * (2.0 * m_eff * dr * dr * (V(r, voltage * r) - E) + 2.0) * psi1 + (-r + dr) * psi0) / (r + dr);
 		psi0 = psi1;
 		psi1 = psi2;
 	}
 	return psi2;
 }
 
-double V(double r){
-	/*
-	if(r > 340.2 && r < 567.0){
-		return (-0.167/27.2116);
-	} else if(r < 226.8){
-	*/
+double V(double r, double extV){
 	if(r < 226.8){
-		return (-0.167/27.2116);
+		return (-0.167/27.2116) + extV;
 	} else {
-		return -0.0835;
+		return 0.0 + extV;
 	}
 }
