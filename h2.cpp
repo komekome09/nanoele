@@ -2,53 +2,27 @@
 #include <iomanip>
 #include <cmath>
 
-const double R = 30.0;
+const double hbar = 1.05459e-34;
+const double m = 9.109534e-31;
+const double e_0 = 1.602189e-19;
 
 int main(){
-	double psi_at_inf(double E, int flag);
-	double dE = 5.0e-6;
-	double dummy;
+	double dE = 1e-3 * e_0;
+	double dx = 1e-10;
 	double E;
-	double E_eV;
-	double E_soln;
-	double Y1, Y2;
-
-	Y1 = psi_at_inf(-0.7, 0);
-
-	for(E = -0.7+dE; E < 0.0; E += dE){
-		Y2 = psi_at_inf(E, 0);
-		if(Y1 * Y2 < 0.0){
-			E_soln = fabs(Y1) * dE / (fabs(Y1) + fabs(Y2)) + E - dE;
-			E_eV = E_soln * 27.2116;
-			std::cout << "#E=" << E_eV << "eV" << std::endl;
-			dummy = psi_at_inf(E, 1);
-		}
-	Y1 = Y2;
-	}
-}
-
-double psi_at_inf(double E, int flag){
-	double V(double r);
-	double dr = 0.0050;
 	double psi0, psi1, psi2;
-	double r;
-	double m_eff = 1.0;
+	double x;
 
-	psi0 = psi1 = 1.0;
-	if(flag){
-		std::cout << "0.000000 " << psi0 << std::endl;
-	}
-	for(r = dr; r < R; r += dr){
-		if(flag){
-			std::cout << std::scientific << r << std::resetiosflags(std::ios_base::floatfield) << " " << psi1 << std::endl;
+	std::cout << "#E, psi(infty)" << std::endl;
+	for(E = 0; E < e_0; E += dE){
+		psi0 = 0;
+		psi1 = 1;
+		for(x = dx; x < 100e-10; x += dx){
+			psi2 = (2*m*(dx/hbar)*(dx/hbar)*(e_0*(x/100e-10)*(x/100e-10)-E)+2)*psi1-psi0;
+			psi0 = psi1;
+			psi1 = psi2;
 		}
-		psi2 = (r * (2.0 * m_eff * dr * dr * (V(r) - E) + 2.0) * psi1 + (-r + dr) * psi0) / (r + dr);
-		psi0 = psi1;
-		psi1 = psi2;
+		std::cout << E/(1e-3*e_0) << " " << psi2 << std::endl;
 	}
-	return psi2;
-}
-
-double V(double r){
-	return (-1.0 / r);
+	return 0;
 }
